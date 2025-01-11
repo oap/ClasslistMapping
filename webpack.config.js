@@ -1,6 +1,6 @@
-
 const path = require('path');
 const fs = require('fs');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/main.js',
@@ -9,8 +9,13 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
     },
     mode: 'production', // Use production mode for optimized output
-    devtool: false, // Disable source maps and eval for clean output
+    devtool: false, // Disable source maps for cleaner output
     plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/index.html', // Path to your index.html file
+            filename: 'index.html', // Output filename in the dist folder
+            inject: false, // Prevent Webpack from injecting scripts into the HTML
+        }),
         {
             apply: (compiler) => {
                 compiler.hooks.emit.tapAsync('AddMetadata', (compilation, callback) => {
