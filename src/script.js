@@ -26,77 +26,52 @@ function populateTable() {
 
     mappings.forEach((mapping, index) => {
         const row = document.createElement('tr');
+        row.className = index % 2 === 0 ? 'even-row' : 'odd-row';
+        row.setAttribute('data-index', index);
+        
+        const isEditing = mapping.isEditing || false;
+        
+        if (isEditing) {
+            row.classList.add('editing-row');
+        }
         row.innerHTML = `
-            <td>${mapping.className}</td>
-            <td>${mapping.d2lId}</td>
-            <td>${mapping.section}</td>
-            <td>${mapping.canvasId}</td>
+            <td>${isEditing ? 
+            `<div class="edit-input" contenteditable="true">${mapping.className}</div>` : 
+            `<span class="view-text">${mapping.className}</span>`}</td>
+            <td>${isEditing ? 
+            `<div class="edit-input" contenteditable="true">${mapping.d2lId}</div>` :
+            `<a href="https://learn.rrc.ca/d2l/lms/classlist/classlist.d2l?ou=${mapping.d2lId}" target="_blank" class="view-link">${mapping.d2lId}</a>`}</td>
+            <td>${isEditing ? 
+            `<div class="edit-input" contenteditable="true">${mapping.section}</div>` :
+            `<span class="view-text">${mapping.section}</span>`}</td>
+            <td>${isEditing ? 
+            `<div class="edit-input" contenteditable="true">${mapping.canvasId}</div>` :
+            `<a href="https://awsacademy.instructure.com/courses/${mapping.canvasId}/users" target="_blank" class="view-link">${mapping.canvasId}</a>`}</td>
             <td>
-                <button onclick="showForm(${index})">Edit</button>
-                <button onclick="deleteMapping(${index})">Delete</button>
+            ${isEditing ? 
+                `<button onclick="saveRow(${index})" class="save-btn">💾 Save</button>` :
+                `<button onclick="editRow(${index})" class="edit-btn">✏️ Edit</button>`}
+            <button onclick="deleteMapping(${index})" class="delete-btn">🗑️ Delete</button>
             </td>
         `;
         tableBody.appendChild(row);
     });
 }
 
-// Function to show the form for adding or editing
-function showForm(index = null) {
-    const formContainer = document.createElement('div');
-    formContainer.id = 'form-container';
-    formContainer.style.position = 'fixed';
-    formContainer.style.top = '50%';
-    formContainer.style.left = '50%';
-    formContainer.style.transform = 'translate(-50%, -50%)';
-    formContainer.style.padding = '20px';
-    formContainer.style.backgroundColor = 'white';
-    formContainer.style.border = '1px solid #ccc';
-    formContainer.style.zIndex = '1000';
-
+// Function to update a specific field of a mapping
+function updateMapping(index, field, value) {
     const mappings = getMappings();
-    const mapping = index !== null ? mappings[index] : { className: '', d2lId: '', section: '', canvasId: '' };
-
-    formContainer.innerHTML = `
-        <form id="mapping-form">
-            <label>Class Name: <input type="text" id="className" value="${mapping.className}" required></label><br><br>
-            <label>D2L ID: <input type="text" id="d2lId" value="${mapping.d2lId}" required></label><br><br>
-            <label>Section: <input type="text" id="section" value="${mapping.section}" required></label><br><br>
-            <label>Canvas ID: <input type="text" id="canvasId" value="${mapping.canvasId}" required></label><br><br>
-            <button type="submit">Save</button>
-            <button type="button" onclick="closeForm()">Cancel</button>
-        </form>
-    `;
-
-    document.body.appendChild(formContainer);
-
-    const form = document.getElementById('mapping-form');
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const updatedMapping = {
-            className: document.getElementById('className').value,
-            d2lId: document.getElementById('d2lId').value,
-            section: document.getElementById('section').value,
-            canvasId: document.getElementById('canvasId').value
-        };
-
-        if (index !== null) {
-            mappings[index] = updatedMapping;
-        } else {
-            mappings.push(updatedMapping);
-        }
-
-        saveMappings(mappings);
-        populateTable();
-        closeForm();
-    });
+    mappings[index][field] = value;
+    saveMappings(mappings);
+    populateTable();
 }
 
-// Function to close the form
-function closeForm() {
-    const formContainer = document.getElementById('form-container');
-    if (formContainer) {
-        document.body.removeChild(formContainer);
-    }
+// Function to add a new mapping row
+function addMapping() {
+    const mappings = getMappings();
+    mappings.push({ className: 'New Class', d2lId: 'd2lId', section: 'New Section', canvasId: 'canvasId' });
+    saveMappings(mappings);
+    populateTable();
 }
 
 // Function to delete a mapping
@@ -109,8 +84,94 @@ function deleteMapping(index) {
     populateTable();
 }
 
+// Function to enable editing mode for a row
+function editRow(index) {
+    const mappings = getMappings();
+    mappings[index].isEditing = true;
+    saveMappings(mappings);
+    populateTable();
+}
+
+// Function to save an edited row
+function saveRow(index) {
+    const mappings = getMappings();
+    const row = document.querySelector(`tr[data-index="${index}"]`);
+    const inputs = row.querySelectorAll('.edit-input');
+    
+    mappings[index].className = inputs[0].textContent;
+    mappings[index].d2lId = inputs[1].textContent;
+    mappings[index].section = inputs[2].textContent;
+    mappings[index].canvasId = inputs[3].textContent;
+    mappings[index].isEditing = false;
+    
+    saveMappings(mappings);
+    populateTable();
+}
+
+// Function to sort mappings by a specific field and toggle ascending/descending order
+let sortOrder = {}; // Track sort order for each field
+function sortTable(field) {
+    const mappings = getMappings();
+    
+    if (!sortOrder[field]) {
+        sortOrder[field] = 'asc'; // Default to ascending if not defined
+    }
+
+    mappings.sort((a, b) => {
+        const comparison = a[field].localeCompare(b[field]);
+        return sortOrder[field] === 'asc' ? comparison : -comparison;
+    });
+
+    // Toggle sort order
+    sortOrder[field] = sortOrder[field] === 'asc' ? 'desc' : 'asc';
+
+    saveMappings(mappings);
+    populateTable();
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    const darkModeButton = document.querySelector('#dark-mode-toggle');
+    body.classList.toggle('dark'); // Toggle the dark class
+    const isDarkMode = body.classList.contains('dark');
+    localStorage.setItem('darkMode', isDarkMode); // Save the state
+
+    // Update the button icon
+    darkModeButton.innerHTML = isDarkMode ? '☀️' : '🌙'; // Sun for light mode, Moon for dark mode
+    darkModeButton.title = isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'; // Tooltip for better UX
+}
+
+
+
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply dark mode if previously set
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark');
+    }
+
     populateTable();
-    document.getElementById('add-mapping-btn').addEventListener('click', () => showForm());
+    document.getElementById('add-mapping-btn').addEventListener('click', addMapping);
+
+    // Add sorting functionality to table headers
+    const headers = document.querySelectorAll('#mappings-table thead th');
+    headers.forEach((header, index) => {
+        header.addEventListener('click', () => {
+            const fields = ['className', 'd2lId', 'section', 'canvasId'];
+            if (fields[index]) {
+                sortTable(fields[index]);
+            }
+        });
+    });
+
+    // Add dark mode toggle button
+    const darkModeButton = document.createElement('button');
+    darkModeButton.id = 'dark-mode-toggle';
+    darkModeButton.innerHTML = localStorage.getItem('darkMode') === 'true' ? '☀️' : '🌙';
+    darkModeButton.style.cssText = 'position: fixed; right: 20px; top: 20px; font-size: 24px; background: none; border: none; cursor: pointer; padding: 10px;';
+    darkModeButton.title = localStorage.getItem('darkMode') === 'true' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    darkModeButton.addEventListener('click', toggleDarkMode);
+    document.body.appendChild(darkModeButton);
 });
+
+
