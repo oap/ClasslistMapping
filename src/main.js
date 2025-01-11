@@ -1,7 +1,11 @@
-import { DataManager } from './DataManager.js';
 import { UIManager } from './UIManager.js';
+import { DataManager } from './DataManager.js';
 
-(async function () {
+(async () => {
     const mappings = await DataManager.getMappings();
     UIManager.init(mappings);
+
+    document.getElementById('add-mapping-btn').addEventListener('click', () => {
+        UIManager.addMapping(mappings);
+    });
 })();

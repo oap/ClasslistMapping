@@ -39,3 +39,4 @@ Desktop.ini
 # Compiled JavaScript files
 *.js.map
 *.css.map
+/data
