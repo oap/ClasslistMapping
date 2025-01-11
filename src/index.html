@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Mappings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h3>Class Mappings</h3>
+    <table id="mappings-table">
+        <thead>
+            <tr>
+                <th>Class Name</th>
+                <th>D2L ID</th>
+                <th>Section</th>
+                <th>Canvas ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically added -->
+        </tbody>
+    </table>
+    <button id="add-mapping-btn">Add New Mapping</button>
+    <script>
+        document.getElementById('add-mapping-btn').addEventListener('click', () => {
+            // Open the UIManager's add mapping page
+            alert('Add Mapping functionality can be integrated here.');
+        });
+    </script>
+</body>
+</html>
