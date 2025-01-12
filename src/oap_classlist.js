@@ -9,6 +9,7 @@
 // @match        https://awsacademy.instructure.com/courses/*/users
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_listValues
 // ==/UserScript==
 
 (async function () {
@@ -183,6 +184,16 @@
                 canvasCell.innerHTML += ` <span>(${canvasUserCount})</span>`;
             }
 
+            const classNameCell = cells[0];
+            if (classNameCell) {
+                classNameCell.style.cursor = "pointer";
+                classNameCell.addEventListener("click", async () => {
+                    const awsClassList = await GM_getValue(`canvasClassList_${classMapping.canvasId}`, { classList: [] });
+                    const d2lClassList = await GM_getValue(`d2lClassList_${classMapping.d2lId}`, { classList: [] });
+                    generateTable(awsClassList, d2lClassList);
+                });
+            }
+
             classMappings.push(classMapping);
         });
 
@@ -252,6 +263,58 @@
             console.log(`No data found for key "${key}".`);
         }
     };
+
+    function generateTable(awsClassList, d2lClassList) {
+        const awsEmails = awsClassList.classList.map((user) => user["Login ID"].trim()).filter(Boolean);
+        const d2lEmails = d2lClassList.classList.map((user) => user.Email.trim());
+
+        const awsSet = new Set(awsEmails);
+        const d2lSet = new Set(d2lEmails);
+
+        const allEmails = Array.from(new Set([...awsSet, ...d2lSet])).sort();
+
+        const container = document.getElementsByClassName("container")[0]
+        // Remove existing table if present
+        const existingTable = container.querySelector('#studentListTable');
+        if (existingTable) {
+            existingTable.remove();
+        }
+
+        const table = document.createElement("table");
+        table.id = "studentListTable";
+        table.style.width = "100%";
+        table.style.borderCollapse = "collapse";
+        table.style.marginBottom = "20px";
+
+        const caption = document.createElement("caption");
+        caption.textContent = `D2L: ${d2lClassList.section_id} - Canvas: ${awsClassList.canvasId}`;
+        caption.style.fontWeight = "bold";
+        caption.style.marginBottom = "10px";
+        table.appendChild(caption);
+
+        let d2lCount = d2lEmails.length;
+        let awsCount = awsEmails.length;
+        const headerRow = document.createElement("tr");
+        headerRow.innerHTML = `
+          <th style="border: 1px solid black; padding: 8px;">Order</th>
+          <th style="border: 1px solid black; padding: 8px;">D2L (${d2lCount})</th>
+          <th style="border: 1px solid black; padding: 8px;">Canvas  (${awsCount})</th>
+        `;
+        table.appendChild(headerRow);
+
+        for (const email of allEmails) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td style="border: 1px solid black; padding: 8px;">${allEmails.indexOf(email) + 1}</td>
+            <td style="border: 1px solid black; padding: 8px;">${d2lSet.has(email) ? email : ""}</td>
+            <td style="border: 1px solid black; padding: 8px;">${awsSet.has(email) ? email : ""}</td>
+          `;
+          table.appendChild(row);
+        }
+
+        container.appendChild(table);
+        document.body.appendChild(container);
+    }
 
     // List all saved data in Tampermonkey for this script
     async function listAllSavedData() {
