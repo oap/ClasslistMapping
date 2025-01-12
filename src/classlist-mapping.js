@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Combined Class List JSON Generator
-// @namespace    http://tampermonkey.net/
+// @name         Classlist Mapping
+// @namespace    https://oap.github.io/
 // @version      1.0
-// @description  Merges functionality for D2L Class List and OAP Class List Mapping with Canvas data handling.
+// @description  Extract and save class list data from D2L and Canvas, and map them together for comparison and analysis.
 // @author       Nico Cai
 // @match        https://learn.rrc.ca/d2l/lms/classlist/classlist.d2l?ou=*
 // @match        *://oap.github.io/ClasslistMapping/*
