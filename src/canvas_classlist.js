@@ -40,9 +40,9 @@
         // Extract data from rows
         const extractedData = rows.map(row => {
             let name = row[nameIndex];
-            name = name.replace(/\n\s*\n\s*pending/g, '').trim(); // Clean up "pending" text
+            cleaned_name = name.replace(/\n\s*\n\s*pending/g, '').trim(); // Clean up "pending" text
             return {
-                Name: name,
+                Name: cleaned_name,
                 'Login ID': row[loginIdIndex],
                 Role: row[roleIndex],
                 joined: !name.includes('pending'), // Indicate if user has joined

@@ -5,6 +5,9 @@
 // @description  Generate JSON from class mapping tables across multiple websites and include links for D2L and Canvas.
 // @author       Nico Cai
 // @match        *://oap.github.io/ClasslistMapping/*
+// @grant        GM_setValue
+// @grant        GM_getValue
+// ==/UserScript==
 
 (function () {
     'use strict';
