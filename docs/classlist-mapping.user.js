@@ -243,7 +243,7 @@
 
         await GM_setValue(`canvasClassList_${canvasId}`, data);
         console.log(`Canvas Class List JSON saved for Canvas ID ${canvasId}:`, JSON.stringify(data, null, 2));
-        exportData(`canvasClassList_${canvasId}`);
+        // exportData(`canvasClassList_${canvasId}`);
     }
 
     const exportData = async (key) => {
@@ -317,15 +317,15 @@
     }
 
     // List all saved data in Tampermonkey for this script
-    async function listAllSavedData() {
-        const keys = GM_listValues(); // Get all keys saved by this script
-        console.log('Listing all saved keys and their data:');
-        for (const key of keys) {
-            const value = await GM_getValue(key); // Retrieve the value for each key
-            console.log(`Key: ${key}`, value);
-        }
-    }
+    // async function listAllSavedData() {
+    //     const keys = GM_listValues(); // Get all keys saved by this script
+    //     console.log('Listing all saved keys and their data:');
+    //     for (const key of keys) {
+    //         const value = await GM_getValue(key); // Retrieve the value for each key
+    //         console.log(`Key: ${key}`, value);
+    //     }
+    // }
 
-    // Call this function
-    listAllSavedData();
+    // // Call this function
+    // listAllSavedData();
 })();
