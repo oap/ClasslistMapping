@@ -253,7 +253,9 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${key}.json`;
+            // creat a date string of the current date in the format YYYY-MM-DD
+            const dateString = new Date().toISOString().split('T')[0];
+            link.download = `${key}_${dateString}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
