@@ -165,13 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add dark mode toggle button
-    const darkModeButton = document.createElement('button');
-    darkModeButton.id = 'dark-mode-toggle';
-    darkModeButton.innerHTML = localStorage.getItem('darkMode') === 'true' ? '☀️' : '🌙';
-    darkModeButton.style.cssText = 'position: fixed; right: 20px; top: 20px; font-size: 24px; background: none; border: none; cursor: pointer; padding: 10px;';
-    darkModeButton.title = localStorage.getItem('darkMode') === 'true' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-    darkModeButton.addEventListener('click', toggleDarkMode);
-    document.body.appendChild(darkModeButton);
+    // const darkModeButton = document.createElement('button');
+    // darkModeButton.id = 'dark-mode-toggle';
+    // darkModeButton.innerHTML = localStorage.getItem('darkMode') === 'true' ? '☀️' : '🌙';
+    // darkModeButton.style.cssText = 'position: fixed; right: 20px; top: 20px; font-size: 24px; background: none; border: none; cursor: pointer; padding: 10px;';
+    // darkModeButton.title = localStorage.getItem('darkMode') === 'true' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    // darkModeButton.addEventListener('click', toggleDarkMode);
+    // document.body.appendChild(darkModeButton);
 });
 
 
