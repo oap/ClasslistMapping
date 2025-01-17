@@ -243,7 +243,8 @@
 
         await GM_setValue(`canvasClassList_${canvasId}`, data);
         console.log(`Canvas Class List JSON saved for Canvas ID ${canvasId}:`, JSON.stringify(data, null, 2));
-        // exportData(`canvasClassList_${canvasId}`);
+        const today = new Date().toISOString().split('T')[0];
+        exportData(`canvasClassList_${canvasId}_${today}`);        
     }
 
     const exportData = async (key) => {
