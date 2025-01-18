@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Classlist Mapping
 // @namespace    https://oap.github.io/
-// @version      1.0
+// @version      1.1
 // @description  Extract and save class list data from D2L and Canvas, and map them together for comparison and analysis.
 // @author       Nico Cai
 // @match        https://learn.rrc.ca/d2l/lms/classlist/classlist.d2l?ou=*
@@ -119,8 +119,28 @@
 
             await GM_setValue(`d2lClassList_${ou}`, data);
             console.log(`D2L Class List saved for D2L ID ${ou}:`, data);
-            exportData(`d2lClassList_${ou}`);
+            await exportData(`d2lClassList_${ou}`);
         });
+    }
+
+    // Function to export data
+    async function exportData(key) {
+        const data = await GM_getValue(key);
+        if (data) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const dateString = new Date().toISOString().split('T')[0];
+            link.download = `${key}_${dateString}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            console.log(`Exported data for key "${key}" as a JSON file.`);
+        } else {
+            console.log(`No data found for key "${key}".`);
+        }
     }
 
     async function extractAndSaveCanvasData() {
@@ -165,27 +185,9 @@
 
         await GM_setValue(`canvasClassList_${canvasId}`, data);
         console.log(`Canvas Class List JSON saved for Canvas ID ${canvasId}:`, JSON.stringify(data, null, 2));
-        exportData(`canvasClassList_${canvasId}`);
+        await exportData(`canvasClassList_${canvasId}`);
     }
 
-    const exportData = async (key) => {
-        const data = await GM_getValue(key);
-        if (data) {
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            const dateString = new Date().toISOString().split('T')[0];
-            link.download = `${key}_${dateString}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            console.log(`Exported data for key "${key}" as a JSON file.`);
-        } else {
-            console.log(`No data found for key "${key}".`);
-        }
-    };
 
     // Handle OAP Classlist Mapping
     async function handleOAPClasslistMapping() {
@@ -323,4 +325,3 @@
 
     listAllSavedData();
 })();
-
