@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Classlist Mapping
 // @namespace    https://oap.github.io/
-// @version      1.1
+// @version      1.2
 // @description  Extract and save class list data from D2L and Canvas, and map them together for comparison and analysis.
 // @author       Nico Cai
 // @match        https://learn.rrc.ca/d2l/lms/classlist/classlist.d2l?ou=*
@@ -10,10 +10,17 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
+// @downloadURL  https://oap.github.io/ClasslistMapping/classlist-mapping.user.js
+// @updateURL    https://oap.github.io/ClasslistMapping/classlist-mapping.user.js
 // ==/UserScript==
 
 (async function () {
     'use strict';
+
+    // Define site names as variables
+    const D2L_SITE = 'learn.rrc.ca/d2l/lms/classlist/classlist.d2l';
+    const OAP_SITE = 'oap.github.io/ClasslistMapping';
+    const CANVAS_SITE = 'awsacademy.instructure.com/courses';
 
     // Utility function to wait for an element to appear dynamically
     const waitForElement = (selector, context = document, timeout = 5000) => {
@@ -41,11 +48,11 @@
     const currentURL = window.location.href;
 
     // Identify and handle the current site
-    if (currentURL.includes('learn.rrc.ca')) {
+    if (currentURL.includes(D2L_SITE)) {
         await handleD2LClassList();
-    } else if (currentURL.includes('oap.github.io/ClasslistMapping')) {
+    } else if (currentURL.includes(OAP_SITE)) {
         await handleOAPClasslistMapping();
-    } else if (currentURL.includes('awsacademy.instructure.com/courses')) {
+    } else if (currentURL.includes(CANVAS_SITE)) {
         await extractAndSaveCanvasData();
     } else {
         console.log('No matching site logic found for:', currentURL);
